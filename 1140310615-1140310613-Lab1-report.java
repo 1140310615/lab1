@@ -18,7 +18,6 @@ import java.util.regex.PatternSyntaxException;
  * 3. illegal
  */
 // modify is here
-// the second modify is here
 class section
 {
 	public int a = 1;
@@ -75,7 +74,7 @@ public class sentence{//+
 		public void merge(String[] input, Matcher M){
 			for(int i = 0; i < input.length; i++){
 				boolean B = true;
-				if (i!=0) {//濮濓綀绀嬮崣锟�
+				if (i!=0) {//姝ｈ礋鍙�
 					M.find();
 					if (M.group(0).equals("-")){B=false;}
 				}
@@ -223,7 +222,7 @@ public class sentence{//+
 			input = scan.nextLine();
 			
 			long startMili = System.currentTimeMillis();
-			System.out.println("閹笛嗩攽瀵拷婵妞傞梻杈剧窗"+startMili);
+			System.out.println("鎵ц寮�濮嬫椂闂达細"+startMili);
 	
 			input = elimispace(input);
 		Pattern pp = Pattern.compile("\\w+([\\^]\\d+)?(([*]\\w+)|([*]\\w+[\\^]\\d+))*([+-]\\w+([\\^]\\d+)?(([*]\\w+)|([*]\\w+[\\^]\\d+))*)*");	
@@ -256,8 +255,8 @@ public class sentence{//+
 			System.out.println("illegal expression");
 		}
 			long endMili = System.currentTimeMillis();
-			System.out.println("缂佹挻娼弮鍫曟？閿涳拷"+endMili);
-			System.out.println("閹笛嗩攽閹粯妞傞梻杈剧窗"+(endMili-startMili)+"濮ｎ偆顫�");
+			System.out.println("缁撴潫鏃堕棿锛�"+endMili);
+			System.out.println("鎵ц鎬绘椂闂达細"+(endMili-startMili)+"姣");
 		}//end while
 		}//main
 }//class sentense
