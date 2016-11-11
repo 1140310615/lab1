@@ -214,51 +214,59 @@ public class sentence{//+
 			return str;
 		}
 		
-		public static void main(String[] args){
-		while (true){	
+	public static sentence ReadExpression(String input){
+	  Pattern p1 = Pattern.compile("[+-]");
+    Matcher M1 = p1.matcher(input);
+    Pattern pp = Pattern.compile(
+        "\\w+([\\^]\\d+)?(([*]\\w+)|([*]\\w+[\\^]\\d+))*([+-]\\w+([\\^]\\d+)?(([*]\\w+)|([*]\\w+[\\^]\\d+))*)*");
+    Matcher MM = pp.matcher(input);
+    if (MM.matches()) {
+      return new sentence(input.split("[+-]"), M1);// ---------------------
+    }else 
+      return null;
+	}
+	
+	public static void main(String[] args) {
+		while (true) {
 			System.out.println("input the expression:");
 			String input = null;
 			Scanner scan = new Scanner(System.in);
 			input = scan.nextLine();
-			
+
 			long startMili = System.currentTimeMillis();
-			System.out.println("执行开始时间："+startMili);
-	
+			System.out.println("执行开始时间：" + startMili);
+
 			input = elimispace(input);
-		Pattern pp = Pattern.compile("\\w+([\\^]\\d+)?(([*]\\w+)|([*]\\w+[\\^]\\d+))*([+-]\\w+([\\^]\\d+)?(([*]\\w+)|([*]\\w+[\\^]\\d+))*)*");	
-		Matcher MM = pp.matcher(input);
-		if (MM.matches()){
-			Pattern p1 = Pattern.compile("[+-]");
-			Matcher M1 = p1.matcher(input);
-			sentence sent = new sentence(input.split("[+-]"), M1);//---------------------
-			System.out.println(print(sent));
+			sentence sent = ReadExpression(input);// ---------------------
 			
-			//System.out.println("input the instruction:");
-			input = scan.nextLine();
-			if ( input.length()>9 && input.substring(0,9).equals("!simplify") ){//simplify
-				input = input.substring(10,input.length());
-				Pattern p = Pattern.compile("(\\w+)=(\\d+)");
-				Matcher M = p.matcher(input);
-				while(M.find()){
-					String varname = M.group(1);
-					int var = Integer.parseInt(M.group(2));
-					sent = sent.simplify(varname,var);//return new sent
-				}//end while
-			}else if ( input.length()>4 && input.substring(0,4).equals("!d/d") ){//derivation
-				input = input.substring(4,input.length());
-				sent.derivation(input);
-			}else{
-				System.out.println("invilid input");
+			if (sent != null) {	
+				System.out.println(print(sent));
+				// System.out.println("input the instruction:");
+				input = scan.nextLine();
+				if (input.length() > 9 && input.substring(0, 9).equals("!simplify")) {// simplify
+					input = input.substring(10, input.length());
+					Pattern p = Pattern.compile("(\\w+)=(\\d+)");
+					Matcher M = p.matcher(input);
+					while (M.find()) {
+						String varname = M.group(1);
+						int var = Integer.parseInt(M.group(2));
+						sent = sent.simplify(varname, var);// return new sent
+					} // end while
+				} else if (input.length() > 4 && input.substring(0, 4).equals("!d/d")) {// derivation
+					input = input.substring(5, input.length());
+					sent.derivation(input);
+				} else {
+					System.out.println("invilid input");
+				}
+			} // illegal expression
+			else {
+				System.out.println("illegal expression");
 			}
-		}//illegal expression
-		else{
-			System.out.println("illegal expression");
-		}
 			long endMili = System.currentTimeMillis();
-			System.out.println("结束时间："+endMili);
-			System.out.println("执行总时间："+(endMili-startMili)+"毫秒");
-		}//end while
-		}//main
+			System.out.println("结束时间：" + endMili);
+			System.out.println("执行总时间：" + (endMili - startMili) + "毫秒");
+		} // end while
+	}// main
 }//class sentense
 
 /*input instance
@@ -266,21 +274,21 @@ x+2*x+5+6+y+4*y+d+3*d
 !simplify y=3
 
 x+2*x+5+6+y+4*y+d+3*d
-!d/dd
+!d/d d
 
 -----------------------
 x*y*2+35*z 
 !simplify x=2 y=3 z=4
 
 x*y*2+35*z 
-!d/dy
+!d/d y
 
 -----------------------
 x*w*s+3+3
 !simplify y=2
 
 x*w*s+3+3
-!d/dy
+!d/d y
 
 -----------------------
 x*g*s%@!^#!%&
@@ -290,7 +298,7 @@ x*g*s%@!^#!%&
 !simplify y=2
 
 1+1+2
-!d/dy
+!d/d y
 
 -----------------------
 
@@ -299,28 +307,28 @@ x+2x+x^4+x*x*x*x
 !simplify x=2
 
 x+2x+x^4+x*x*x*x
-!d/dx
+!d/d x
 
 -----------------------
 xyz+x^2*y*z^3+6xyz+df+3
 !simplify x=2
 
 xyz+x^2*y*z^3+6xyz+df+3
-!d/dxyz
+!d/d xyz
 
 -----------------------
 2+x+2x+2x^4+sdf+sdf*gf^5*2x+x*x*x*x+x
 !simplify x=1 sdf=2
 
 2+x+2x+2x^4+sdf+sdf*gf^5*2x+x*x*x*x+x
-!d/dx
+!d/d x
 
 -----------------------
 2+x+2 x ^ 3 +x 	yz+e
 !simplify x=1
 
 2+x+2 x ^ 3 +x 	yz+e
-!d/dx
+!d/d x
 
 -----------------------
 
@@ -328,7 +336,7 @@ xyz+x^2*y*z^3+6xyz+df+3
 !simplify x=4
 
 4-8x-2x-3y
-!d/dy
+!d/d y
 
 */
 
