@@ -171,12 +171,13 @@ public class sentence{//+
 					f = true;
 				}
 			}
+			if (!f) {
+				System.out.println("var doesn't exsit in derivation");
+				return this;
+			}
 			if (fremove) {
 				sect.remove(tremove);
 				sentence.totaleles.clear();
-			}
-			if (!f) {
-				System.out.println("var doesn't exsit in derivation");
 			}
 			//System.out.println(print(this));
 			String inputnew = print(this);

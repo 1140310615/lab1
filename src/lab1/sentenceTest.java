@@ -4,16 +4,16 @@ import org.junit.Test;
 public class sentenceTest {
   @Test
   public void testReadexpression() {
-    String exp = "x+   y+4   +e ^ 4";
+    String exp = "7";
     String result = null;
     exp = sentence.elimispace(exp);
     sentence sent = sentence.ReadExpression(exp);
     if (sent != null){
-      result = sentence.print(sent);
+      result = sentence.print(sent.derivation("x"));
     }else
     {
       result = "illegal expression";
     }
-    assertEquals("1*x+1*y+4+1*e^4",result); 
+    assertEquals("0",result);
   }
 }
