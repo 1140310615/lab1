@@ -1,15 +1,10 @@
 package lab1;
 import java.util.regex.Matcher;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.Set;
 import java.util.Vector;
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 /*
  * problem
@@ -17,54 +12,7 @@ import java.util.regex.PatternSyntaxException;
  * 2. ! simplify x > 0
  * 3. illegal
  */
-
-class section
-{
-	public int a = 1;
-	//element[] eles;
-	public Map<String,Integer> eles = new HashMap<String, Integer>();
-	section(String[] input, boolean B){//* B + true - false
-		Pattern pnum = Pattern.compile("\\d+");
-		Pattern pword = Pattern.compile("\\w+");
-		Matcher M,N;
-		for (int i = 0; i < input.length; i++){
-			M = pnum.matcher(input[i]);
-			if (M.matches()){
-				if(B) {a = a*Integer.parseInt(input[i]);}else{a = -1*a*Integer.parseInt(input[i]);}
-			}// num alone
-			else//2x^4 2x x^4 x
-			{
-				M = pnum.matcher(input[i]);
-				if (M.find()){//2x^4 2x
-					if (M.start() == 0 ){
-						if (B){a = a*Integer.parseInt(M.group());}else{a = -1*a*Integer.parseInt(M.group());}
-						input[i] = input[i].substring(M.end(), input[i].length());
-					}
-				}
-				//x^4 x 
-				M = pnum.matcher(input[i]);
-				N = pword.matcher(input[i]);
-				N.find();
-				int times = 1;
-				if (M.find()){//x^4
-					times = Integer.parseInt(M.group(0));
-				}
-				//x
-				//element = input[i]
-				try{
-					if ( eles.containsKey(N.group(0)) ){ //x*x*x x^4*x*x
-						eles.put(N.group(0), eles.get(N.group(0))+times ); 
-					}else{
-						eles.put(N.group(0), times);
-					}
-				}catch(IllegalStateException e){
-					break;
-				}
-			}
-		}
-	}
-}
-public class sentence{//+
+class sentence{//+
 		public Map<Integer,section> sect = new HashMap<Integer,section>();
 		public static Map<Integer,Vector<Integer>> totaleles = new HashMap<Integer, Vector<Integer>>();
 		sentence(String[] input, Matcher M){//+false -true
@@ -123,14 +71,8 @@ public class sentence{//+
 			return a.containsAll(b) && b.containsAll(a);
 		}
 		
-		public static String elimispace(String input) throws PatternSyntaxException{
-			String elimi = "[ \\t]";
-			Pattern p = Pattern.compile(elimi);
-			Matcher M = p.matcher(input);
-			return M.replaceAll("").trim();
-		}
 		
-		public sentence simplify(String varname, int var){
+		public boolean simplify(String varname, int var){
 			boolean f = false;
 			for (int i :sect.keySet()){
 				if (sect.get(i).eles.containsKey(varname)){
@@ -141,19 +83,10 @@ public class sentence{//+
 					f = true;
 				}
 			}
-			if (!f) {
-				System.out.println("var doesn't exsit in simplify");
-			}
-			//System.out.println(print(this));
-			String inputnew = print(this);
-			Pattern p = Pattern.compile("[+-]");
-			Matcher M = p.matcher(inputnew);
-			sentence sentnew = new sentence(inputnew.split("[+-]"),M);
-			System.out.println(print(sentnew));
-			return sentnew;
+			return f;
 		}
-		
-		public sentence derivation(String varname){
+	 
+		public boolean derivation(String varname){
 			boolean f = false;
 			boolean fremove = false;
 			int tremove = 0;
@@ -171,103 +104,14 @@ public class sentence{//+
 					f = true;
 				}
 			}
-			if (!f) {
-				System.out.println("var doesn't exsit in derivation");
-				return this;
-			}
-			if (fremove) {
+			if (fremove & f) {
 				sect.remove(tremove);
 				sentence.totaleles.clear();
 			}
-			//System.out.println(print(this));
-			String inputnew = print(this);
-			Pattern p = Pattern.compile("[+-]");
-			Matcher M = p.matcher(inputnew);
-			sentence sentnew = new sentence(inputnew.split("[+-]"),M);
-			System.out.println(print(sentnew));
-			return sentnew;
+			return f;
 		}
 		
-		public static String print(sentence sent){
-			String str = "";
-			for (int i :sent.sect.keySet()){
-				if(sent.sect.get(i).a<0 && str.length()>=1){
-					str = str.substring(0,str.length()-1);
-				}
-				if (sent.sect.get(i).a != 1 || sent.sect.get(i).a != -1){str += sent.sect.get(i).a+"*";}
-				boolean l = false;
-				for (Map.Entry<String, Integer> entry : sent.sect.get(i).eles.entrySet()){
-					String key = entry.getKey();
-					int value = entry.getValue();
-					if (value == 1){str += key;}else {str +=key; str+="^";str+=value;}
-					str+="*";
-					l = true;
-				}
-				if (!l && (sent.sect.get(i).a == 1 || sent.sect.get(i).a == -1)) {str += sent.sect.get(i).a+"*";}
-				if (str.length()>=1){
-						str = str.substring(0,str.length()-1);
-						str = str+"+";
-				}
-			}
-			if (str.length()>=1){
-				str = str.substring(0,str.length()-1);
-			}
-			return str;
-		}
-		
-	public static sentence ReadExpression(String input){
-	  Pattern p1 = Pattern.compile("[+-]");
-    Matcher M1 = p1.matcher(input);
-    Pattern pp = Pattern.compile(
-        "\\w+([\\^]\\d+)?(([*]\\w+)|([*]\\w+[\\^]\\d+))*([+-]\\w+([\\^]\\d+)?(([*]\\w+)|([*]\\w+[\\^]\\d+))*)*");
-    Matcher MM = pp.matcher(input);
-    if (MM.matches()) {
-      return new sentence(input.split("[+-]"), M1);// ---------------------
-    }else 
-      return null;
-	}
-	
-	public static void main(String[] args) {
-		while (true) {
-			System.out.println("input the expression:");
-			String input = null;
-			Scanner scan = new Scanner(System.in);
-			input = scan.nextLine();
 
-			long startMili = System.currentTimeMillis();
-			System.out.println("执行开始时间：" + startMili);
-
-			input = elimispace(input);
-			sentence sent = ReadExpression(input);// ---------------------
-			
-			if (sent != null) {	
-				System.out.println(print(sent));
-				// System.out.println("input the instruction:");
-				input = scan.nextLine();
-				if (input.length() > 9 && input.substring(0, 9).equals("!simplify")) {// simplify
-					input = input.substring(10, input.length());
-					Pattern p = Pattern.compile("(\\w+)=(\\d+)");
-					Matcher M = p.matcher(input);
-					while (M.find()) {
-						String varname = M.group(1);
-						int var = Integer.parseInt(M.group(2));
-						sent = sent.simplify(varname, var);// return new sent
-					} // end while
-				} else if (input.length() > 4 && input.substring(0, 4).equals("!d/d")) {// derivation
-					input = input.substring(5, input.length());
-					sent.derivation(input);
-				} else {
-					System.out.println("invilid input");
-				}
-			} // illegal expression
-			else {
-				System.out.println("illegal expression");
-			}
-			long endMili = System.currentTimeMillis();
-			System.out.println("结束时间：" + endMili);
-			System.out.println("执行总时间：" + (endMili - startMili) + "毫秒");
-		} // end while
-	}// main
 }//class sentense
 
 /*input instance
